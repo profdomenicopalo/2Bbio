@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub Didattico Digitale | Esplora la Conoscenza</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            gold: '#f59e0b',
+                            crimson: '#e11d48',
+                            cyan: '#06b6d4',
+                            purple: '#8b5cf6',
+                            dark: '#0b0f17',
+                            card: 'rgba(17, 24, 39, 0.7)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        cinzel: ['Cinzel', 'serif']
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 4s ease-in-out infinite',
+                        'gradient': 'gradientBG 12s ease infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+                            '50%': { opacity: '0.8', transform: 'scale(1.05)' }
+                        },
+                        gradientBG: {
+                            '0%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                            '100%': { 'background-position': '0% 50%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #07090e;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(18, 24, 38, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 0 25px rgba(139, 92, 246, 0.15);
+        }
+
+        /* Gradient background mesh */
+        .bg-mesh {
+            background: radial-gradient(circle at 15% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 50% 80%, rgba(225, 29, 72, 0.12) 0%, transparent 50%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #07090e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f293d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        /* Tilt effect perspective */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        /* Text Gradient Effect */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #b45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-purple {
+            background: linear-gradient(135deg, #e0e7ff 0%, #a855f7 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-cyan {
+            background: linear-gradient(135deg, #cffaff 0%, #06b6d4 50%, #0284c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative selection:bg-brand-purple selection:text-white">
+
+    <!-- Interactive Canvas Particle Background -->
+    <canvas id="bg-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Background Ambient Glows -->
+    <div class="fixed top-1/4 left-10 w-96 h-96 bg-brand-purple/20 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+    <div class="fixed bottom-1/4 right-10 w-96 h-96 bg-brand-cyan/20 rounded-full blur-3xl pointer-events-none animate-pulse-glow" style="animation-delay: 2s;"></div>
+
+    <!-- MAIN WRAPPER -->
+    <div class="relative z-10 flex-grow flex flex-col justify-between">
+
+        <!-- HEADER / NAVIGATION -->
+        <header class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
+            <nav class="glass-panel rounded-2xl px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-purple to-brand-cyan p-0.5 flex items-center justify-center shadow-lg shadow-brand-purple/20">
+                        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                            <i data-lucide="book-open-check" class="w-5 h-5 text-brand-cyan"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="font-cinzel text-xl font-bold tracking-wider text-white">HUB<span class="text-brand-cyan">DIDATTICO</span></span>
+                        <span class="text-xs text-gray-400 block -mt-1 tracking-widest uppercase">Liceo Digitale</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <button id="add-resource-btn" onclick="openAddModal()" class="hidden sm:flex items-center space-x-2 bg-gradient-to-r from-brand-purple/20 to-brand-cyan/20 hover:from-brand-purple/40 hover:to-brand-cyan/40 border border-white/10 hover:border-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-brand-cyan"></i>
+                        <span>Aggiungi Risorsa</span>
+                    </button>
+                    <div class="text-xs bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-gray-300 font-mono hidden md:block">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-ping"></span>A.S. 2026/2027
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow flex flex-col">
+
+            <!-- HERO SECTION (Visible on Home) -->
+            <section id="hero-section" class="text-center py-8 lg:py-12">
+                <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-brand-gold"></i>
+                    <span class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Piattaforma Multimediale di Studio</span>
+                </div>
+                <h1 class="font-cinzel text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                    Esplora la <span class="text-gradient-purple">Conoscenza</span> Umanistica
+                </h1>
+                <p class="max-w-2xl mx-auto text-base sm:text-lg text-gray-300 font-light leading-relaxed mb-10">
+                    Seleziona una disciplina per accedere ai percorsi didattici guidati, alle fonti storiche e ai moduli di approfondimento critico.
+                </p>
+            </section>
+
+            <!-- VIEW 1: HOME - SUBJECT SELECTION -->
+            <section id="view-home" class="transition-all duration-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto perspective-1000">
+
+                    <!-- ITALIANO CARD (MANZONI) -->
+                    <div onclick="navigateTo('italiano')" class="glass-panel group rounded-3xl p-6 sm:p-8 relative overflow-hidden cursor-pointer border border-white/10 hover:border-brand-purple/50 transition-all duration-500 hover:shadow-2xl hover:shadow-brand-purple/20 flex flex-col justify-between">
+                        <!-- Card Glow Backdrop -->
+                        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-purple/20 rounded-full blur-2xl group-hover:bg-brand-purple/30 transition-all duration-500"></div>
+                        
+                        <div>
+                            <!-- Header Info -->
+                            <div class="flex items-center justify-between mb-6">
+                                <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-purple/20 border border-brand-purple/30 text-purple-300">
+                                    Letteratura & Lingua
+                                </span>
+                                <i data-lucide="book-open" class="w-6 h-6 text-purple-400 group-hover:scale-110 transition-transform"></i>
+                            </div>
+
+                            <!-- Image Container -->
+                            <div class="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-6 bg-slate-900 border border-white/10">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Alessandro_Manzoni_by_Giuseppe_Molini.jpg/800px-Alessandro_Manzoni_by_Giuseppe_Molini.jpg" 
+                                     onerror="this.src='https://placehold.co/600x800/1e1b4b/e0e7ff?text=Alessandro+Manzoni'" 
+                                     alt="Alessandro Manzoni" 
+                                     class="w-full h-full object-cover object-top filter grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    <h3 class="font-cinzel text-2xl font-bold text-white mb-1">Alessandro Manzoni</h3>
+                                    <p class="text-xs text-purple-200/80 font-mono">1785 – 1873 • Padre della Lingua Italiana</p>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <h2 class="font-cinzel text-3xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">Italiano</h2>
+                            <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                                Dalla poesia epica dell'Eneide alla Divina Commedia, passando per il Romanticismo, il romanzo storico e il lirismo leopardiano.
+                            </p>
+                        </div>
+
+                        <!-- CTA Button -->
+                        <div class="mt-auto">
+                            <div class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-brand-purple to-indigo-600 hover:from-brand-purple/90 hover:to-indigo-500 text-white font-semibold flex items-center justify-between shadow-lg shadow-brand-purple/25 transition-all group-hover:translate-x-1">
+                                <span>Esplora Italiano</span>
+                                <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STORIA CARD (AUGUSTO) -->
+                    <div onclick="navigateTo('storia')" class="glass-panel group rounded-3xl p-6 sm:p-8 relative overflow-hidden cursor-pointer border border-white/10 hover:border-brand-cyan/50 transition-all duration-500 hover:shadow-2xl hover:shadow-brand-cyan/20 flex flex-col justify-between">
+                        <!-- Card Glow Backdrop -->
+                        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-cyan/20 rounded-full blur-2xl group-hover:bg-brand-cyan/30 transition-all duration-500"></div>
+
+                        <div>
+                            <!-- Header Info -->
+                            <div class="flex items-center justify-between mb-6">
+                                <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-cyan/20 border border-brand-cyan/30 text-cyan-300">
+                                    Storiografia & Fonti
+                                </span>
+                                <i data-lucide="landmark" class="w-6 h-6 text-cyan-400 group-hover:scale-110 transition-transform"></i>
+                            </div>
+
+                            <!-- Image Container -->
+                            <div class="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-6 bg-slate-900 border border-white/10">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Statue-of-Augustus.jpg/800px-Statue-of-Augustus.jpg" 
+                                     onerror="this.src='https://placehold.co/600x800/083344/cffaff?text=Ottaviano+Augusto'" 
+                                     alt="Imperatore Augusto" 
+                                     class="w-full h-full object-cover object-top filter grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    <h3 class="font-cinzel text-2xl font-bold text-white mb-1">Ottaviano Augusto</h3>
+                                    <p class="text-xs text-cyan-200/80 font-mono">63 a.C. – 14 d.C. • Primo Imperatore Romano</p>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <h2 class="font-cinzel text-3xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">Storia</h2>
+                            <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                                Analisi critica dell'Età Antica, delle Grandi Rivoluzioni, dei conflitti del Novecento e della nascita delle istituzioni democratiche.
+                            </p>
+                        </div>
+
+                        <!-- CTA Button -->
+                        <div class="mt-auto">
+                            <div class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-brand-cyan to-blue-600 hover:from-brand-cyan/90 hover:to-blue-500 text-white font-semibold flex items-center justify-between shadow-lg shadow-brand-cyan/25 transition-all group-hover:translate-x-1">
+                                <span>Esplora Storia</span>
+                                <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- VIEW 2: SUBJECT DETAIL VIEW (DYNAMIC) -->
+            <section id="view-subject" class="hidden transition-all duration-500">
+                
+                <!-- TOP NAVIGATION / BREADCRUMB & CONTROLS -->
+                <div class="glass-panel rounded-2xl p-4 sm:p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4">
+                        <button onclick="navigateTo('home')" class="flex items-center space-x-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-sm font-medium transition-all group">
+                            <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
+                            <span>Torna alla Home</span>
+                        </button>
+                        <div class="h-6 w-px bg-white/10"></div>
+                        <div class="flex items-center space-x-2">
+                            <i id="subject-badge-icon" data-lucide="book" class="w-5 h-5 text-brand-purple"></i>
+                            <span id="subject-badge-title" class="font-cinzel text-lg font-bold tracking-wide">Italiano</span>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar & Add Button -->
+                    <div class="flex items-center space-x-3 w-full md:w-auto">
+                        <div class="relative flex-grow md:w-64">
+                            <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                            <input type="text" id="topic-search" oninput="filterTopics()" placeholder="Cerca argomento o fonte..." class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/50 transition-all">
+                        </div>
+                        <button onclick="openAddModal()" class="bg-brand-purple/20 hover:bg-brand-purple/30 text-purple-200 border border-brand-purple/40 px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center space-x-1 flex-shrink-0">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Aggiungi</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUBJECT HERO HEADER -->
+                <div id="subject-hero" class="glass-panel rounded-3xl p-6 sm:p-8 mb-10 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="max-w-2xl">
+                        <span id="subject-hero-tag" class="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-purple/20 border border-brand-purple/30 text-purple-300">Percorso Formativo</span>
+                        <h2 id="subject-hero-title" class="font-cinzel text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-3">Modulo Italiano</h2>
+                        <p id="subject-hero-desc" class="text-gray-300 text-sm sm:text-base leading-relaxed">Raccolta ragionata di dispense, approfondimenti critici e testi consultabili per lo studio autonomo.</p>
+                    </div>
+                    <div id="subject-hero-portrait" class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-white/20 shadow-xl flex-shrink-0">
+                        <img src="" alt="Portrait" class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <!-- TOPICS GRID -->
+                <div id="topics-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Cards will be populated dynamically -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden text-center py-16 glass-panel rounded-3xl mt-6">
+                    <i data-lucide="file-search" class="w-12 h-12 text-gray-500 mx-auto mb-4"></i>
+                    <h3 class="text-lg font-bold text-gray-300 mb-1">Nessun argomento trovato</h3>
+                    <p class="text-sm text-gray-500">Prova a cambiare il termine di ricerca o aggiungi un nuovo elemento.</p>
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="w-full border-t border-white/5 bg-slate-950/40 backdrop-blur-lg py-6 mt-12">
+            <div class="max-w-7xl mx-auto px-4 text-center sm:flex sm:justify-between sm:items-center text-xs text-gray-400">
+                <p>&copy; 2026 Hub Didattico Digitale — Piattaforma per le Scuole Superiori.</p>
+                <p class="mt-2 sm:mt-0">Progettato per la consultazione libera e la didattica integrata.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- MODAL 1: PREVIEW / RESOURCE VIEW MODAL -->
+    <div id="resource-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md hidden transition-opacity duration-300">
+        <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 sm:p-8 relative border border-white/15 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <!-- Close button -->
+            <button onclick="closeResourceModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Modal Content -->
+            <div class="flex items-center space-x-3 mb-4">
+                <span id="modal-badge" class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-brand-purple/20 text-purple-300 border border-brand-purple/30">
+                    Italiano
+                </span>
+                <span id="modal-category" class="text-xs text-gray-400 font-mono">Unità 1</span>
+            </div>
+
+            <h3 id="modal-title" class="font-cinzel text-2xl sm:text-3xl font-bold text-white mb-3">Eneide: Introduzione</h3>
+            <p id="modal-description" class="text-sm text-gray-300 leading-relaxed mb-6">
+                Analisi del poema virgiliano, contesto storico dell'età augustea e parallelismi con l'epica omerica.
+            </p>
+
+            <div class="bg-white/5 rounded-2xl p-4 border border-white/10 mb-6">
+                <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Punti chiave dell'argomento:</h4>
+                <ul id="modal-highlights" class="space-y-2 text-xs text-gray-300">
+                    <!-- Populated dynamically -->
+                </ul>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-white/10">
+                <button onclick="closeResourceModal()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-gray-300 font-medium transition-all">
+                    Chiudi
+                </button>
+                <a id="modal-link-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-purple to-brand-cyan hover:opacity-90 text-white font-semibold text-sm flex items-center space-x-2 shadow-lg transition-all">
+                    <span>Vai al Sito Esterno</span>
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD CUSTOM RESOURCE MODAL (TEACHER TOOL) -->
+    <div id="add-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md hidden transition-opacity duration-300">
+        <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 relative border border-white/15 shadow-2xl">
+            <!-- Close button -->
+            <button onclick="closeAddModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center space-x-2 mb-2">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-brand-cyan"></i>
+                <h3 class="font-cinzel text-xl font-bold text-white">Aggiungi Nuovo Argomento</h3>
+            </div>
+            <p class="text-xs text-gray-400 mb-6">Inserisci un nuovo link personalizzato che verrà salvato nella memoria del tuo browser.</p>
+
+            <form id="add-topic-form" onsubmit="handleAddTopic(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Materia</label>
+                    <select id="form-subject" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-purple">
+                        <option value="italiano">Italiano</option>
+                        <option value="storia">Storia</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Titolo Argomento</label>
+                    <input type="text" id="form-title" required placeholder="Es. Il Decameron di Boccaccio" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-purple">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Descrizione Breve</label>
+                    <textarea id="form-desc" rows="3" required placeholder="Sintetica introduzione ai contenuti del link..." class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-purple"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">URL / Link Esterno</label>
+                    <input type="url" id="form-url" required placeholder="https://it.wikipedia.org/wiki/..." class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-purple">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-300 mb-1">Punti Chiave (separati da virgola)</label>
+                    <input type="text" id="form-highlights" placeholder="Contesto storico, Struttura, Temi principali" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-purple">
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-white/10">
+                    <button type="button" onclick="closeAddModal()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-gray-300 font-medium">
+                        Annulla
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-purple to-brand-cyan hover:opacity-90 text-white font-semibold text-sm shadow-lg">
+                        Salva Argomento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // Default Data Set
+        const defaultData = {
+            italiano: [
+                {
+                    id: 'it-1',
+                    title: 'Eneide: Introduzione',
+                    category: 'Epica Classica',
+                    description: 'Introduzione al poema epico di Virgilio: la figura di Enea, il mito delle origini troiane di Roma e la provvidenza imperiale.',
+                    url: 'https://it.wikipedia.org/wiki/Eneide',
+                    highlights: ['Contesto augusteo e propaganda', 'Il pio Enea ed il concetto di Pietas', 'La discesa agli inferi nel Libro VI']
+                },
+                {
+                    id: 'it-2',
+                    title: 'I Promessi Sposi: Quadro Storico e Temi',
+                    category: 'Ottocento & Romanzo',
+                    description: 'La Milano del Seicento sotto la dominazione spagnola, la Provvidenza, la critica alla giustizia e l’evoluzione della lingua manzoniana.',
+                    url: 'https://it.wikipedia.org/wiki/I_promessi_sposi',
+                    highlights: ['La peste e la carestia a Milano', 'Figure emblematiche: Innominato e Fra Cristoforo', 'La questione della lingua italiana']
+                },
+                {
+                    id: 'it-3',
+                    title: 'Dante & La Divina Commedia',
+                    category: 'Trecento Poetico',
+                    description: 'Viaggio allegorico nei tre regni dell’Oltretomba: struttura cosmologica, teologia medievale e linguaggio figurato.',
+                    url: 'https://it.wikipedia.org/wiki/Divina_Commedia',
+                    highlights: ['La legge del Contrappasso', 'Guelfi e Ghibellini nella Firenze dantesca', 'Il passaggio dalla cantica dell\'Inferno al Paradiso']
+                },
+                {
+                    id: 'it-4',
+                    title: 'Giacomo Leopardi e il Pessimismo',
+                    category: 'Lirica del Romanticismo',
+                    description: 'L\'evoluzione del pensiero leopardiano: dal pessimismo storico al pessimismo cosmico nei Canti e nelle Operette Morali.',
+                    url: 'https://it.wikipedia.org/wiki/Giacomo_Leopardi',
+                    highlights: ['La teoria del piacere e dell\'infinito', 'La Natura matrigna', 'La solidarietà umana nella Ginestra']
+                }
+            ],
+            storia: [
+                {
+                    id: 'st-1',
+                    title: 'Augusto e la Nascita dell\'Impero Romano',
+                    category: 'Storia Antica',
+                    description: 'La fine della Repubblica romana, la vittoria ad Azio, l\'istituzione del Principato e la Pax Augusta.',
+                    url: 'https://it.wikipedia.org/wiki/Ottaviano_Augusto',
+                    highlights: ['La riforma dell\'esercito e delle province', 'L\'Ara Pacis e la propaganda figurativa', 'Le Res Gestae Divi Augusti']
+                },
+                {
+                    id: 'st-2',
+                    title: 'La Rivoluzione Francese',
+                    category: 'Età Moderna',
+                    description: 'Dalla presa della Bastiglia (1789) alla dichiarazione dei Diritti dell\'Uomo, il Terrore giacobino e l\'ascesa di Napoleone.',
+                    url: 'https://it.wikipedia.org/wiki/Rivoluzione_francese',
+                    highlights: ['La fine dell\'Ancien Régime', 'La Dichiarazione dei Diritti dell\'Uomo e del Cittadino', 'L\'impatto politico in Europa']
+                },
+                {
+                    id: 'st-3',
+                    title: 'La Seconda Guerra Mondiale',
+                    category: 'Novecento',
+                    description: 'Analisi delle cause, dei principali fronti bellici, dell\'Olocausto, della Resistenza e del nuovo ordine post-bellico.',
+                    url: 'https://it.wikipedia.org/wiki/Seconda_guerra_mondiale',
+                    highlights: ['La svolta del 1942-1943', 'I trattati di pace e la Guerra Fredda', 'La nascita dell\'ONU']
+                },
+                {
+                    id: 'st-4',
+                    title: 'La Costituzione Italiana e la Repubblica',
+                    category: 'Storia Contemporanea',
+                    description: 'Il referendum istituzionale del 2 giugno 1946, i lavori dell\'Assemblea Costituente ed i Principi Fondamentali.',
+                    url: 'https://it.wikipedia.org/wiki/Costituzione_della_Repubblica_Italiana',
+                    highlights: ['L\'articolo 1: Lavoro e Sovranità Popolare', 'I tre poteri dello Stato e la Corte Costituzionale', 'I diritti e doveri dei cittadini']
+                }
+            ]
+        };
+
+        // App State
+        let currentSubject = 'italiano';
+        let database = JSON.parse(localStorage.getItem('hub_didattico_data')) || defaultData;
+
+        // Initialize Icons & Canvas on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initCanvas();
+            saveToStorage();
+        });
+
+        function saveToStorage() {
+            localStorage.setItem('hub_didattico_data', JSON.stringify(database));
+        }
+
+        // Navigation Controller
+        function navigateTo(view) {
+            const homeView = document.getElementById('view-home');
+            const subjectView = document.getElementById('view-subject');
+            const heroSection = document.getElementById('hero-section');
+            const addBtn = document.getElementById('add-resource-btn');
+
+            if (view === 'home') {
+                subjectView.classList.add('hidden');
+                homeView.classList.remove('hidden');
+                heroSection.classList.remove('hidden');
+                addBtn.classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                currentSubject = view;
+                homeView.classList.add('hidden');
+                heroSection.classList.add('hidden');
+                subjectView.classList.remove('hidden');
+                addBtn.classList.remove('hidden');
+                renderSubjectView();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Render Subject Data
+        function renderSubjectView() {
+            const isItaliano = currentSubject === 'italiano';
+            
+            // Badge & Colors setup
+            const badgeIcon = document.getElementById('subject-badge-icon');
+            const badgeTitle = document.getElementById('subject-badge-title');
+            const heroTag = document.getElementById('subject-hero-tag');
+            const heroTitle = document.getElementById('subject-hero-title');
+            const heroDesc = document.getElementById('subject-hero-desc');
+            const heroPortrait = document.getElementById('subject-hero-portrait').querySelector('img');
+
+            if (isItaliano) {
+                badgeIcon.setAttribute('data-lucide', 'book-open');
+                badgeIcon.className = "w-5 h-5 text-purple-400";
+                badgeTitle.innerText = "Italiano & Letteratura";
+                
+                heroTag.className = "px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-purple/20 border border-brand-purple/30 text-purple-300";
+                heroTitle.innerText = "Percorsi di Italiano";
+                heroDesc.innerText = "Modulo dedicato allo studio dei grandi autori della lingua italiana, dall'epica classica alla lirica moderna.";
+                heroPortrait.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Alessandro_Manzoni_by_Giuseppe_Molini.jpg/800px-Alessandro_Manzoni_by_Giuseppe_Molini.jpg";
+            } else {
+                badgeIcon.setAttribute('data-lucide', 'landmark');
+                badgeIcon.className = "w-5 h-5 text-cyan-400";
+                badgeTitle.innerText = "Storia & Storiografia";
+                
+                heroTag.className = "px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-brand-cyan/20 border border-brand-cyan/30 text-cyan-300";
+                heroTitle.innerText = "Percorsi di Storia";
+                heroDesc.innerText = "Raccolta di studi storici, analisi documentali e approfondimenti dall'Epoca Romana fino all'Età Repubblicana.";
+                heroPortrait.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Statue-of-Augustus.jpg/800px-Statue-of-Augustus.jpg";
+            }
+
+            document.getElementById('topic-search').value = '';
+            filterTopics();
+            lucide.createIcons();
+        }
+
+        // Filter and Render Topic Cards
+        function filterTopics() {
+            const query = document.getElementById('topic-search').value.toLowerCase();
+            const grid = document.getElementById('topics-grid');
+            const emptyState = document.getElementById('empty-state');
+            const topics = database[currentSubject] || [];
+
+            const filtered = topics.filter(t => 
+                t.title.toLowerCase().includes(query) || 
+                t.description.toLowerCase().includes(query) ||
+                t.category.toLowerCase().includes(query)
+            );
+
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filtered.forEach(topic => {
+                    const card = document.createElement('div');
+                    const isItaliano = currentSubject === 'italiano';
+                    const accentColor = isItaliano ? 'purple' : 'cyan';
+
+                    card.className = "glass-card rounded-2xl p-6 flex flex-col justify-between group cursor-pointer relative overflow-hidden";
+                    card.onclick = () => openResourceModal(topic);
+
+                    card.innerHTML = `
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-${accentColor}-500/10 border border-${accentColor}-500/20 text-${accentColor}-300">
+                                    ${topic.category}
+                                </span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors"></i>
+                            </div>
+                            <h3 class="font-cinzel text-xl font-bold text-white mb-2 group-hover:text-${accentColor}-300 transition-colors">${topic.title}</h3>
+                            <p class="text-xs text-gray-300 leading-relaxed line-clamp-3">${topic.description}</p>
+                        </div>
+                        <div class="pt-4 border-t border-white/5 flex items-center justify-between">
+                            <span class="text-xs text-gray-400 flex items-center gap-1">
+                                <i data-lucide="link" class="w-3.5 h-3.5"></i> Risorsa Didattica
+                            </span>
+                            <span class="text-xs font-semibold text-${accentColor}-400 group-hover:underline">Apri scheda &rarr;</span>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+            lucide.createIcons();
+        }
+
+        // Open Resource Modal
+        function openResourceModal(topic) {
+            const isItaliano = currentSubject === 'italiano';
+            const modal = document.getElementById('resource-modal');
+            const badge = document.getElementById('modal-badge');
+            
+            badge.innerText = isItaliano ? 'Italiano' : 'Storia';
+            badge.className = isItaliano 
+                ? 'px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-brand-purple/20 text-purple-300 border border-brand-purple/30'
+                : 'px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-brand-cyan/20 text-cyan-300 border border-brand-cyan/30';
+
+            document.getElementById('modal-category').innerText = topic.category;
+            document.getElementById('modal-title').innerText = topic.title;
+            document.getElementById('modal-description').innerText = topic.description;
+            document.getElementById('modal-link-btn').href = topic.url;
+
+            const highlightsList = document.getElementById('modal-highlights');
+            highlightsList.innerHTML = '';
+            if (topic.highlights && topic.highlights.length > 0) {
+                topic.highlights.forEach(h => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start space-x-2';
+                    li.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i> <span>${h}</span>`;
+                    highlightsList.appendChild(li);
+                });
+            } else {
+                highlightsList.innerHTML = `<li class="text-gray-500 italic">Nessun punto chiave specificato.</li>`;
+            }
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeResourceModal() {
+            document.getElementById('resource-modal').classList.add('hidden');
+        }
+
+        // Add Custom Topic Modal Functions
+        function openAddModal() {
+            document.getElementById('form-subject').value = currentSubject;
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+            document.getElementById('add-topic-form').reset();
+        }
+
+        function handleAddTopic(e) {
+            e.preventDefault();
+            const subject = document.getElementById('form-subject').value;
+            const title = document.getElementById('form-title').value;
+            const desc = document.getElementById('form-desc').value;
+            const url = document.getElementById('form-url').value;
+            const rawHighlights = document.getElementById('form-highlights').value;
+
+            const highlights = rawHighlights ? rawHighlights.split(',').map(s => s.trim()) : [];
+
+            const newTopic = {
+                id: 'custom-' + Date.now(),
+                title: title,
+                category: 'Aggiunto dal Docente',
+                description: desc,
+                url: url,
+                highlights: highlights
+            };
+
+            database[subject].unshift(newTopic);
+            saveToStorage();
+
+            closeAddModal();
+
+            if (currentSubject === subject) {
+                filterTopics();
+            } else {
+                navigateTo(subject);
+            }
+        }
+
+        // Particle Background System
+        function initCanvas() {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = Array.from({ length: 40 }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2 + 0.5,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                alpha: Math.random() * 0.5 + 0.2
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+                    if (p.y < 0) p.y = height;
+                    if (p.y > height) p.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(139, 92, 246, ${p.alpha})`;
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+    </script>
+</body>
+</html>
